@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Пьёшь железо, а ферритин не растёт?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #F7F3EA;
+    --bg-warm: #F1EADD;
+    --card: #FFFFFF;
+    --ink: #241F1A;
+    --ink-soft: #6B6459;
+    --rule: #E4DBCA;
+    --rust: #B3411E;
+    --rust-deep: #7E2C13;
+    --rust-tint: #F6E2D8;
+    --graphite: #46545F;
+    --graphite-deep: #2D383F;
+    --graphite-tint: #E1E7EA;
+    --moss: #5E7245;
+    --moss-deep: #3D4E2C;
+    --moss-tint: #E4EAD9;
+    --amber: #A9791F;
+    --amber-deep: #715114;
+    --amber-tint: #F3E7CC;
+    --serif: 'Fraunces', serif;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+  *{ box-sizing: border-box; }
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap{ max-width: 700px; margin: 0 auto; padding: 0 24px; }
+
+  header.top{
+    padding: 56px 0 40px;
+    border-bottom: 1px solid var(--rule);
+    background: var(--bg-warm);
+  }
+  .eyebrow{
+    font-size: 13px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--rust); font-weight: 600; margin: 0 0 16px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .eyebrow .dot{ width:6px; height:6px; border-radius:50%; background:var(--rust); }
+  h1.title{
+    font-family: var(--serif); font-weight: 500;
+    font-size: clamp(28px, 5vw, 42px); line-height: 1.12; margin: 0 0 16px;
+  }
+  .subtitle{
+    font-size: 17px; line-height: 1.6; color: var(--ink-soft); margin: 0;
+  }
+
+  main{ padding: 44px 0 20px; }
+  main p{ font-size: 16.5px; line-height: 1.75; margin: 0 0 22px; }
+  main h2{
+    font-family: var(--serif); font-weight: 500; font-size: 25px;
+    margin: 46px 0 18px; line-height: 1.3;
+  }
+  main h3{
+    font-family: var(--serif); font-weight: 500; font-size: 19px;
+    margin: 30px 0 12px;
+  }
+  strong{ font-weight: 600; }
+
+  .symptom-list{
+    list-style: none; padding: 0; margin: 0 0 8px;
+    display: grid; gap: 10px;
+  }
+  .symptom-list li{
+    font-size: 16px; padding: 14px 16px;
+    background: var(--card); border: 1px solid var(--rule); border-radius: 10px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .symptom-list .emoji{ font-size: 20px; flex-shrink:0; }
+  .note{
+    font-size: 14.5px; color: var(--ink-soft); font-style: italic; margin-top: 4px;
+  }
+
+  .flow{
+    background: var(--card); border: 1px solid var(--rule); border-radius: 12px;
+    padding: 20px; font-size: 15px; line-height: 1.9; color: var(--ink-soft);
+    margin: 0 0 20px;
+  }
+
+  .callout{
+    border-left: 4px solid var(--rust);
+    background: var(--rust-tint);
+    padding: 18px 20px; border-radius: 0 10px 10px 0;
+    margin: 0 0 24px;
+  }
+  .callout p{ margin: 0; font-size: 15.5px; }
+  .callout strong{ color: var(--rust-deep); }
+
+  .chain{
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+    gap: 14px; margin: 0 0 28px;
+  }
+  .chain-item{
+    background: var(--card); border: 1px solid var(--rule); border-radius: 12px; padding: 20px;
+  }
+  .chain-num{
+    font-family: var(--serif); font-size: 26px; color: var(--rust); font-weight: 500; line-height: 1;
+    margin-bottom: 8px; display:block;
+  }
+  .chain-title{ font-weight: 600; font-size: 15.5px; margin-bottom: 6px; }
+  .chain-desc{ font-size: 14px; color: var(--ink-soft); line-height: 1.55; }
+
+  .danger-box{
+    background: var(--graphite-deep); color: #F1ECE2;
+    border-radius: 14px; padding: 26px 24px; margin: 8px 0 30px;
+  }
+  .danger-box h2{ color: #fff; margin-top: 0; font-size: 22px; }
+  .danger-group{ margin-bottom: 20px; }
+  .danger-group:last-child{ margin-bottom: 0; }
+  .danger-group-title{
+    font-weight: 600; font-size: 15px; margin-bottom: 8px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .danger-group p{ color: #C7CDD0; font-size: 14.5px; margin: 0 0 6px; line-height: 1.6; }
+
+  .quote-box{
+    background: var(--bg-warm); border-radius: 12px; padding: 20px 22px;
+    margin: 0 0 24px;
+  }
+  .quote-box .q{ font-family: var(--serif); font-style: italic; font-size: 17px; color: var(--rust-deep); }
+
+  .day-schedule{ display: grid; gap: 14px; margin: 0 0 28px; }
+  .day-block{
+    background: var(--card); border: 1px solid var(--rule); border-radius: 12px;
+    padding: 18px 20px; display: flex; gap: 14px; align-items: flex-start;
+  }
+  .day-emoji{ font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+  .day-text strong{ display:block; margin-bottom:4px; font-size: 15px; }
+  .day-text p{ margin: 0; font-size: 14.5px; color: var(--ink-soft); line-height: 1.6; }
+
+  .bonus-grid{
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr));
+    gap: 12px; margin: 0 0 30px;
+  }
+  .bonus-item{
+    background: var(--moss-tint); border-radius: 10px; padding: 14px 16px;
+    font-size: 14.5px; color: var(--moss-deep); line-height: 1.5;
+  }
+  .bonus-item strong{ display:block; color: var(--moss-deep); margin-bottom: 2px; }
+
+  footer.cta{
+    background: var(--rust); color: #FBEADF; padding: 48px 24px; text-align: center;
+    border-radius: 18px; margin: 20px 0 60px;
+  }
+  .cta-title{
+    font-family: var(--serif); font-size: clamp(22px, 3vw, 28px); font-weight: 500;
+    margin: 0 0 12px; line-height: 1.3;
+  }
+  .cta-price{ font-size: 15px; color: #F4D9C9; margin: 0 0 22px; }
+  .cta-price b{ color: #fff; font-size: 17px; }
+  .cta-btn{
+    display: inline-block; background: #241F1A; color: #F7F3EA;
+    font-weight: 600; font-size: 15.5px; padding: 15px 30px; border-radius: 10px;
+    text-decoration: none;
+  }
+
+  @media (max-width: 560px){
+    header.top{ padding: 40px 0 30px; }
+    main{ padding: 34px 0 10px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <p class="eyebrow"><span class="dot"></span>Про железо и усвоение</p>
+    <h1 class="title">Пьёшь железо, а ферритин не растёт?</h1>
+    <p class="subtitle">Почему препараты не работают, что на самом деле стоит за дефицитом и как восстановить усвоение железа системно</p>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <p>Приходит сообщение: «Ферритин 8. Пью железо полгода. Ноль». Знакомая история — таких сообщений сотни.</p>
+
+  <p>Смотришь на это и сразу понятно: дело не в силе воли и не в «особенном организме». Дело в том, что железо пьют изолированно — без работы с ЖКТ, без кофакторов, без понимания, почему организм иногда не поднимает железо, а реагирует на его приём воспалением.</p>
+
+  <p>Через систему восстановления усвоения — без смены препарата — ферритин можно сдвинуть куда быстрее, чем «стандартные» 5 единиц в год.</p>
+
+  <h2>Узнаёшь себя?</h2>
+  <ul class="symptom-list">
+    <li><span class="emoji">🔋</span> Утром уже уставшая, кофе не помогает</li>
+    <li><span class="emoji">💇‍♀️</span> Волосы лезут клоками</li>
+    <li><span class="emoji">💔</span> Одышка от лестницы, сердце колотится без причины</li>
+    <li><span class="emoji">🧠</span> Туман в голове, забываешь на середине мысли</li>
+    <li><span class="emoji">💅</span> Ногти ломаются, кожа сухая, губы трескаются</li>
+    <li><span class="emoji">🧊</span> Тянет погрызть лёд, понюхать бензин, пожевать мел</li>
+  </ul>
+  <p class="note">Три и больше — читай дальше.</p>
+
+  <h2>Что обычно делают</h2>
+  <div class="flow">Гуглишь симптомы → сдаёшь ферритин → покупаешь железо → пьёшь 2-3 месяца → пересдаёшь — тот же → бросаешь → через полгода по кругу</div>
+  <p>Меняешь препарат, форму, дозировку. Ждёшь. Результат — примерно никакой.</p>
+  <p><strong>Проблема не в том, что делаешь что-то неправильно. Проблема в том, что делаешь только одну вещь из тех, что реально нужны.</strong></p>
+
+  <h2>Железо — не просто минерал, который «досыпают»</h2>
+  <p>В организме железо не летает само по себе — оно встроено в белковые структуры.</p>
+  <p><strong>Ферритин</strong> — белковая капсула, которая хранит железо. Нет белка — нет «сейфа», железу негде храниться.<br>
+  <strong>Трансферрин</strong> — белок-переносчик. Мало белка — некому доставлять железо по назначению.<br>
+  <strong>Гемоглобин</strong> — тоже строится из белка.</p>
+  <p>При этом на приём железа организм не всегда отвечает ростом ферритина. У части людей вместо этого возникает воспалительная реакция — и тогда чем больше пьёшь, тем меньше эффекта: организм тратит ресурс не на то, чтобы усвоить, а на то, чтобы «погасить» реакцию.</p>
+
+  <h2>Почему опасно «просто начать пить/капать»</h2>
+  <div class="callout">
+    <p>Железо — вещество с токсическим потенциалом и высокой нагрузкой на организм; без проверки состояния и настройки факторов усвоения оно просто не усвоится, а будет «гоняться» через детокс-системы, усиливая побочки, вызывая системное воспаление и не давая результата.</p>
+  </div>
+  <p><strong>Именно поэтому в программе сначала идёт настройка факторов усвоения, и только потом — сам приём.</strong></p>
+
+  <h2>Что реально решает результат</h2>
+  <p>Это не одна таблетка, а цепочка условий:</p>
+  <div class="chain">
+    <div class="chain-item">
+      <span class="chain-num">1</span>
+      <div class="chain-title">ЖКТ</div>
+      <div class="chain-desc">Кислотность, слизистая, воспаление в кишечнике. Если нарушено — железо просто проходит транзитом.</div>
+    </div>
+    <div class="chain-item">
+      <span class="chain-num">2</span>
+      <div class="chain-title">Кофакторы</div>
+      <div class="chain-desc">Без них железо не встраивается в ферритин, застревает. Даже при «достаточном» железе кроветворение не идёт.</div>
+    </div>
+    <div class="chain-item">
+      <span class="chain-num">3</span>
+      <div class="chain-title">Сочетаемость условий</div>
+      <div class="chain-desc">Рассинхрон между ЖКТ, кофакторами и приёмом превращает его в бессмысленный или даже воспалительный процесс.</div>
+    </div>
+    <div class="chain-item">
+      <span class="chain-num">4</span>
+      <div class="chain-title">Сам препарат</div>
+      <div class="chain-desc">Начинает реально работать, только когда первые три условия выстроены. Не раньше.</div>
+    </div>
+  </div>
+  <p>Большинство начинают сразу с четвёртого пункта. Пропускают первые три. И потом разводят руками.</p>
+
+  <div class="danger-box">
+    <h2>🚨 Что будет, если не лечить железодефицит?</h2>
+    <div class="danger-group">
+      <div class="danger-group-title">🫀 Здоровье</div>
+      <p>Проблемы с сердечно-сосудистой системой — сердце работает интенсивнее, возможна тахикардия.</p>
+      <p>Нарушение работы щитовидной железы — железо кофактор ферментов, участвующих в синтезе гормонов; результат — гипотиреоз.</p>
+      <p>Частые инфекции, простуды, медленное выздоровление и заживление.</p>
+    </div>
+    <div class="danger-group">
+      <div class="danger-group-title">💇🏻‍♀️ Внешность</div>
+      <p>Волосы выпадают, пробор и виски редеют. Кожа теряет тонус, появляются морщины. Ногти слоятся и ломаются.</p>
+    </div>
+    <div class="danger-group">
+      <div class="danger-group-title">🤰🏼 Репродуктивная система</div>
+      <p>Риск бесплодия — фолликулы не созревают, повышается риск преждевременных родов и низкого веса ребёнка.</p>
+      <p>Сложности с беременностью и циклом.</p>
+    </div>
+    <div class="danger-group">
+      <div class="danger-group-title">🫩 Самочувствие</div>
+      <p>Хроническая усталость, депрессия.</p>
+      <p>Ухудшение памяти — кислород не поступает, концентрация снижается.</p>
+    </div>
+  </div>
+
+  <h3>«Но у меня просто такой организм»</h3>
+  <p>Это не диагноз. Это обычно значит — «никто не смотрел глубже одного показателя». Ферритин низкий, железо назначили, не сработало — «ну, значит, особенность». На деле часто просто не оценивали ЖКТ и сочетаемость факторов между собой.</p>
+
+  <h3>«Я уже всё перепробовала»</h3>
+  <p>Скорее всего — пробовала одно и то же в разных упаковках: другой препарат, другая форма, другая дозировка. Но если не менялось то, как организм эту таблетку встречает — ЖКТ, кофакторы, сочетаемость — результат и не мог измениться.</p>
+
+  <h2>А что, если я создала такой лечебный протокол?</h2>
+  <p>Протокол, который работает над каждым из четырёх звеньев одновременно: восстанавливаем и запускаем работу ЖКТ, учтены все кофакторы, работа над усвоением белка, снятием воспаления в организме, создание всех необходимых условий, чтобы организм начал усваивать железо — и только потом сам приём железа. Не разрозненные советы из десяти статей, а готовая схема на каждый день. Вот как выглядит один день внутри программы — что происходит в твоём организме, когда ты проходишь программу:</p>
+
+  <div class="day-schedule">
+    <div class="day-block">
+      <span class="day-emoji">🌅</span>
+      <div class="day-text"><strong>С утра натощак</strong>
+      <p>Поддержка сосудов и тканей костного мозга, где идёт кроветворение. Помощь в транспорте и усвоении железа, в формировании гемоглобина.</p></div>
+    </div>
+    <div class="day-block">
+      <span class="day-emoji">🍳</span>
+      <div class="day-text"><strong>На завтрак</strong>
+      <p>Запускается работа щитовидной железы, без которой кроветворение замедляется. Поддержка митохондрий и энергообмена. Снижается воспаление, мешающее усвоению. Работа над кислотностью желудка, без которой железо не переходит в усвояемую форму. Снижается нагрузка на ЖКТ — начинает усваиваться белок и микро-макронутриенты. Добавляются кофакторы, усиливающие усвоение железа и укрепляющие сосуды.</p></div>
+    </div>
+    <div class="day-block">
+      <span class="day-emoji">🕐</span>
+      <div class="day-text"><strong>Через час после завтрака</strong>
+      <p>Синтез эритроцитов и гемоглобина, энергетический обмен.</p></div>
+    </div>
+    <div class="day-block">
+      <span class="day-emoji">🕑</span>
+      <div class="day-text"><strong>Через два часа после завтрака</strong>
+      <p>Поддержка митохондрий при дефиците кислорода. Организм получает элемент, без которого железо не встраивается в гемоглобин и ферритин.</p></div>
+    </div>
+    <div class="day-block">
+      <span class="day-emoji">🍲</span>
+      <div class="day-text"><strong>На обед</strong>
+      <p>Усиливаются ферментные реакции кроветворения, доставка кислорода к тканям.</p></div>
+    </div>
+    <div class="day-block">
+      <span class="day-emoji">🍽</span>
+      <div class="day-text"><strong>На ужин</strong>
+      <p>Увеличение кислотности желудка и переваривания белка. Расщепление белков, жиров и углеводов — улучшается всасывание железа и витаминов, снижается нагрузка на ЖКТ.</p></div>
+    </div>
+    <div class="day-block">
+      <span class="day-emoji">🌙</span>
+      <div class="day-text"><strong>Перед сном</strong>
+      <p>Синтез коллагена, укрепление сосудов и костного мозга. Усвоение железа и кальция, синтез белка. Связывание железа в кишечнике, снижение воспаления, улучшение усвоения из пищи и добавок.</p></div>
+    </div>
+  </div>
+
+  <h2>Что происходит бонусом, пока ты просто следуешь схеме</h2>
+  <p>Ты пришла за ферритином — но система работает шире, и вот что обычно замечают попутно:</p>
+  <div class="bonus-grid">
+    <div class="bonus-item"><strong>✨ Меньше воспаления</strong>Снижается фоновое воспаление, а не только то, что мешает железу</div>
+    <div class="bonus-item"><strong>✨ Стабильнее энергия</strong>Поддержка митохондрий, «батарейка» перестаёт садиться к обеду</div>
+    <div class="bonus-item"><strong>✨ Спокойнее нервная система</strong>Легче переносится стресс, налаживается сон</div>
+    <div class="bonus-item"><strong>✨ Крепче сосуды</strong>Дополнительная работа на сосудистую стенку</div>
+    <div class="bonus-item"><strong>✨ Лучше пищеварение</strong>Чиним не только усвоение железа, а пищеварение как систему</div>
+    <div class="bonus-item"><strong>✨ Поддержка щитовидной железы</strong>Работа на метаболизм, который часто просаживается вместе с железом</div>
+  </div>
+
+  <div class="quote-box">
+    <p class="q">Когда работают все четыре звена одновременно — организм усваивает железо с той скоростью, на которую был способен всегда. Ему просто раньше мешали.</p>
+  </div>
+
+  <p>Хватит гадать, потреблять тонну информации, доверять врачу, который вам до сих пор не помог, жить в состоянии истощения и батарейки на нуле!</p>
+
+</main>
+
+<div class="wrap">
+  <footer class="cta">
+    <h2 class="cta-title">Один раз пройди программу — и закроешь вопрос, как поднять железо</h2>
+    <p class="cta-price"><b>4990 ₽</b> — за весь протокол</p>
+    <a class="cta-btn" href="#">Получить программу →</a>
+  </footer>
+</div>
+
+</body>
+</html>
