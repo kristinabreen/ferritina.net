@@ -168,9 +168,43 @@
     text-decoration: none;
   }
 
+  .assistant-launcher{
+    position: fixed; right: 22px; bottom: 22px; z-index: 20;
+    border: 0; border-radius: 999px; padding: 14px 18px;
+    background: var(--ink); color: #fff; font: 600 14px var(--sans);
+    box-shadow: 0 12px 32px rgba(36,31,26,.22); cursor: pointer;
+    display: flex; align-items: center; gap: 9px;
+  }
+  .assistant-launcher-dot{ width:9px; height:9px; border-radius:50%; background:#8DB16B; box-shadow:0 0 0 4px rgba(141,177,107,.18); }
+  .assistant-panel{
+    position: fixed; right: 22px; bottom: 82px; z-index: 21;
+    width: min(390px, calc(100vw - 28px)); height: min(610px, calc(100vh - 110px));
+    background: var(--card); border: 1px solid var(--rule); border-radius: 18px;
+    box-shadow: 0 24px 70px rgba(36,31,26,.22); overflow: hidden;
+    display: none; grid-template-rows: auto 1fr auto;
+  }
+  .assistant-panel.is-open{ display:grid; }
+  .assistant-head{ background:var(--graphite-deep); color:#fff; padding:16px 18px; display:flex; justify-content:space-between; gap:16px; }
+  .assistant-head strong{ display:block; font-family:var(--serif); font-size:18px; font-weight:500; }
+  .assistant-status{ display:block; color:#C7CDD0; font-size:12px; margin-top:3px; }
+  .assistant-close{ border:0; background:transparent; color:#fff; font-size:24px; line-height:1; cursor:pointer; padding:0; }
+  .assistant-messages{ overflow:auto; padding:18px; display:flex; flex-direction:column; gap:12px; background:#FBF9F4; }
+  .assistant-message{ max-width:88%; padding:11px 13px; border-radius:12px; font-size:14px; line-height:1.5; }
+  .assistant-message.bot{ align-self:flex-start; background:#fff; border:1px solid var(--rule); border-bottom-left-radius:3px; }
+  .assistant-message.user{ align-self:flex-end; color:#fff; background:var(--rust); border-bottom-right-radius:3px; }
+  .assistant-choices{ display:flex; flex-wrap:wrap; gap:7px; margin-top:9px; }
+  .assistant-choice{ border:1px solid var(--rust); color:var(--rust-deep); background:#fff; border-radius:999px; padding:7px 10px; font:500 12px var(--sans); cursor:pointer; }
+  .assistant-disclaimer{ display:block; color:var(--ink-soft); font-size:11px; line-height:1.4; margin-top:8px; }
+  .assistant-form{ border-top:1px solid var(--rule); padding:12px; display:flex; gap:8px; background:#fff; }
+  .assistant-input{ min-width:0; flex:1; border:1px solid var(--rule); border-radius:10px; padding:11px 12px; font:14px var(--sans); color:var(--ink); }
+  .assistant-send{ border:0; border-radius:10px; background:var(--rust); color:#fff; padding:0 15px; font:600 14px var(--sans); cursor:pointer; }
+  .assistant-buy{ display:inline-block; margin-top:10px; padding:9px 12px; border-radius:8px; background:var(--ink); color:#fff; text-decoration:none; font-weight:600; }
+
   @media (max-width: 560px){
     header.top{ padding: 40px 0 30px; }
     main{ padding: 34px 0 10px; }
+    .assistant-launcher{ right:14px; bottom:14px; }
+    .assistant-panel{ right:14px; bottom:72px; height:calc(100vh - 92px); }
   }
 </style>
 </head>
@@ -344,6 +378,112 @@
     <a class="cta-btn" href="#">Получить программу →</a>
   </footer>
 </div>
+
+<button class="assistant-launcher" id="assistantLauncher" type="button" aria-haspopup="dialog" aria-controls="assistantPanel" aria-expanded="false">
+  <span class="assistant-launcher-dot" aria-hidden="true"></span> Спросить ассистента
+</button>
+
+<section class="assistant-panel" id="assistantPanel" role="dialog" aria-modal="true" aria-labelledby="assistantTitle">
+  <div class="assistant-head">
+    <div><strong id="assistantTitle">Ассистент по программе</strong><span class="assistant-status">Поможет разобраться за 2 минуты</span></div>
+    <button class="assistant-close" id="assistantClose" type="button" aria-label="Закрыть">×</button>
+  </div>
+  <div class="assistant-messages" id="assistantMessages" aria-live="polite"></div>
+  <form class="assistant-form" id="assistantForm">
+    <input class="assistant-input" id="assistantInput" type="text" maxlength="500" placeholder="Напишите ваш вопрос…" aria-label="Ваш вопрос">
+    <button class="assistant-send" type="submit">Отправить</button>
+  </form>
+</section>
+
+<script>
+(() => {
+  const panel = document.getElementById('assistantPanel');
+  const launcher = document.getElementById('assistantLauncher');
+  const close = document.getElementById('assistantClose');
+  const messages = document.getElementById('assistantMessages');
+  const form = document.getElementById('assistantForm');
+  const input = document.getElementById('assistantInput');
+  let started = false;
+
+  const addMessage = (text, type = 'bot', choices = []) => {
+    const bubble = document.createElement('div');
+    bubble.className = `assistant-message ${type}`;
+    bubble.textContent = text;
+    if (choices.length) {
+      const row = document.createElement('div');
+      row.className = 'assistant-choices';
+      choices.forEach(choice => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'assistant-choice';
+        button.textContent = choice;
+        button.addEventListener('click', () => answer(choice));
+        row.appendChild(button);
+      });
+      bubble.appendChild(row);
+    }
+    messages.appendChild(bubble);
+    messages.scrollTop = messages.scrollHeight;
+  };
+
+  const recommend = () => {
+    const bubble = document.createElement('div');
+    bubble.className = 'assistant-message bot';
+    bubble.append('Программа может подойти как образовательная пошаговая схема, если вы хотите системно разобраться в теме. Она не заменяет диагностику и назначения врача. Стоимость полного протокола — 4990 ₽.');
+    const link = document.createElement('a');
+    link.className = 'assistant-buy';
+    link.href = '#';
+    link.textContent = 'Посмотреть программу →';
+    bubble.appendChild(link);
+    messages.appendChild(bubble);
+    messages.scrollTop = messages.scrollHeight;
+  };
+
+  const answer = (value) => {
+    addMessage(value, 'user');
+    const normalized = value.toLowerCase();
+    window.setTimeout(() => {
+      if (/боль в груди|обморок|не могу дышать|сильн.*одыш/.test(normalized)) {
+        addMessage('Такие симптомы требуют срочной очной оценки. Не откладывайте обращение в экстренную медицинскую службу. Я не буду предлагать программу вместо медицинской помощи.');
+      } else if (/беремен|кормл|ребен|ребён|капельниц|назнач|дозиров/.test(normalized)) {
+        addMessage('В этой ситуации схему добавок и дозировки важно согласовать с врачом. Ассистент не ставит диагноз и не меняет назначения. Могу рассказать только о составе и формате программы.');
+      } else if (/что внутри|формат/.test(normalized)) {
+        addMessage('Внутри — пошаговая ежедневная схема по работе с ЖКТ, кофакторами, усвоением белка и последовательностью приёма. Перед применением добавок важно обсудить состав со своим врачом.', 'bot', ['Сколько стоит?', 'Подойдёт ли мне?']);
+      } else if (/кому|подойд/.test(normalized)) {
+        addMessage('Программа рассчитана на взрослых, которые хотят системно разобраться в теме дефицита железа. Она не подходит вместо обследования, экстренной помощи или персонального назначения врача.', 'bot', ['Что внутри программы?', 'Сколько стоит?']);
+      } else if (/цен|стоим|куп|хочу/.test(normalized)) {
+        recommend();
+      } else if (/ферритин|анализ|гемоглобин|желез/.test(normalized)) {
+        addMessage('Один показатель нельзя безопасно интерпретировать отдельно от симптомов, общего анализа крови и клинической ситуации. Обсудите результаты с врачом. Что для вас сейчас важнее?', 'bot', ['Понять формат программы', 'Узнать стоимость']);
+      } else {
+        addMessage('Понимаю. Я могу объяснить, как устроена программа, кому она может подойти и сколько стоит. Медицинские диагнозы и персональные дозировки лучше обсуждать с врачом.', 'bot', ['Что внутри программы?', 'Кому она подходит?', 'Сколько стоит?']);
+      }
+    }, 350);
+  };
+
+  const openPanel = () => {
+    panel.classList.add('is-open');
+    launcher.setAttribute('aria-expanded', 'true');
+    if (!started) {
+      addMessage('Здравствуйте! Я виртуальный ассистент. Помогу понять формат программы и отвечу на вопросы — без диагнозов и давления. Что вас интересует?', 'bot', ['Что внутри программы?', 'Подойдёт ли мне?', 'Сколько стоит?']);
+      addMessage('Не заменяю врача. При резком ухудшении самочувствия обратитесь за медицинской помощью.', 'bot');
+      started = true;
+    }
+    input.focus();
+  };
+
+  launcher.addEventListener('click', openPanel);
+  close.addEventListener('click', () => { panel.classList.remove('is-open'); launcher.setAttribute('aria-expanded', 'false'); launcher.focus(); });
+  form.addEventListener('submit', event => {
+    event.preventDefault();
+    const value = input.value.trim();
+    if (!value) return;
+    input.value = '';
+    answer(value);
+  });
+  document.addEventListener('keydown', event => { if (event.key === 'Escape' && panel.classList.contains('is-open')) close.click(); });
+})();
+</script>
 
 </body>
 </html>
